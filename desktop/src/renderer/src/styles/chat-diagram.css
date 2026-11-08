@@ -1,0 +1,66 @@
+.md-mermaid {
+  margin: 10px 0;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--ide-border);
+  background: var(--ide-code-bg);
+  overflow: hidden;
+}
+
+.md-mermaid-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.md-mermaid-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--ide-border);
+  background: var(--ide-surface-bg);
+}
+
+.md-mermaid-toolbar__label {
+  font-size: 0.65rem;
+  color: var(--ide-muted);
+}
+
+.md-mermaid-expand {
+  border: 1px solid var(--ide-border);
+  border-radius: 4px;
+  background: var(--ide-button-bg);
+  color: var(--ide-fg);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.md-mermaid-expand:hover {
+  background: var(--ide-hover-overlay);
+  border-color: var(--ide-accent);
+  color: var(--ide-accent);
+}
+
+.md-mermaid-canvas {
+  padding: 10px;
+  max-height: min(520px, 62vh);
+  overflow: auto;
+  cursor: zoom-in;
+}
+
+.md-mermaid-canvas svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
+
+.md-mermaid--error {
+  padding: 10px;
+  color: var(--ide-error);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}

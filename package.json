@@ -1,0 +1,50 @@
+{
+  "name": "agent-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Electron desktop agent IDE — Spring Boot backend + WebSocket",
+  "author": {
+    "name": "daipeng",
+    "email": "icoolkj@163.com",
+    "url": "https://agentdesktop.cn"
+  },
+  "homepage": "https://agentdesktop.cn",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "pnpm dev:ui",
+    "dev:ui": "pnpm --filter @agent-desktop/shared-types build && pnpm --filter @agent-desktop/desktop dev",
+    "dev:full": "pnpm --filter @agent-desktop/shared-types build && pnpm build:java && pnpm --filter @agent-desktop/desktop dev",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "build": "pnpm --filter @agent-desktop/shared-types build && pnpm build:java && pnpm --filter @agent-desktop/desktop build",
+    "package:win": "pnpm build && pnpm --filter @agent-desktop/desktop package:win",
+    "package:mac": "pnpm build && pnpm --filter @agent-desktop/desktop package:mac",
+    "build:java": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-java.ps1",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm --filter @agent-desktop/shared-types test && pnpm test:java && pnpm --filter @agent-desktop/desktop test",
+    "test:java": "mvn -f server test",
+    "test:e2e": "pnpm --filter @agent-desktop/shared-types build && pnpm --filter @agent-desktop/desktop build:e2e && pnpm --filter @agent-desktop/desktop test:e2e"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "pnpm": {
+    "neverBuiltDependencies": ["node-pty"]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.18.2",
+    "vue-eslint-parser": "^9.4.3"
+  }
+}

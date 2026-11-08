@@ -1,0 +1,74 @@
+Agent Desktop 补充材料
+
+官网：https://agentdesktop.cn
+联系人：daipeng
+
+
+一、参赛表单文案汇总
+
+【项目概况】
+
+Agent Desktop 是一款面向开发者的本地 AI Agent 桌面 IDE，通过 Electron + Spring Boot 架构，将对话式智能体与代码编辑、工具调用、工作区管理深度整合，解决现有 AI 编程工具依赖云端、模型接入分散、多模态文档（PDF/图片）与 Agent 工作流难以统一的问题，让团队在本机安全可控地运行「读代码—改代码—跑工具」的完整 Agent 闭环。
+
+【产品 / 服务特点】
+
+Agent Desktop 采用 Electron（Vue 3）+ Spring Boot 前后端分离架构，通过 WebSocket 实现流式对话与 NDJSON 事件推送，对标 Claude Code / Cursor 的 Agent 体验。核心能力包括：原生 tool_calls 工具链（read_file、grep、写文件、终端等），与 CLIProxyAPI 网关对接，统一 OpenAI 兼容协议下的多模型路由；多模态处理对齐 Claude Code 规范，支持图片内联、小 PDF 文档块、大 PDF 分页 read_file 提取；内置权限确认、会话 checkpoint、Git 状态感知、MCP 扩展与项目规则注入。数据与代码默认留在本机，适合企业内网、私有化部署及对数据安全有要求的研发场景。
+
+【项目市场化能力】
+
+目标用户为软件研发团队、独立开发者及需要 AI 辅助编程的企业 IT 部门。市场需求来自：AI 编程 Agent 化、国内多模型统一接入、政企代码与文档本地化部署。商业化路径：开源核心 + 企业版（SSO、审计、私有模型网关）；与 CLIProxyAPI 等网关生态联合交付；面向高校、园区提供实训与竞赛场景授权。产品已具备可运行形态（agentdesktop.cn），可通过开发者社区与 ToB 试点验证获客。
+
+【团队介绍】
+
+团队由 Agent Desktop 发起人戴鹏牵头，具备 Electron 桌面应用、Spring Boot 后端与 AI Agent 工程化经验，分工覆盖桌面端、Agent 引擎、LLM 网关对接与 DevOps。团队全栈自研，架构对标国际主流 Agent IDE，并针对国内 CPA 多模型网关与 PDF/图片工作流做了落地适配。
+
+【业务进展】
+
+产品已完成 Electron 桌面端与 Spring Boot Agent 后端联调，支持 WebSocket 流式对话、原生 tool_calls 工具链及 MCP 扩展。已与 CLIProxyAPI 网关打通多模型路由，完成 Claude / DeepSeek 等模型的 Agent 与多模态链路验证。官网 agentdesktop.cn 已上线，当前处于 MVP 向产品化推进阶段，正寻求高校实训、园区及开发团队内测合作。
+
+【投资亮点】
+
+（1）赛道清晰：AI 编程从 Copilot 走向 Agent IDE。（2）架构差异化：Electron + Java Agent 引擎，数据可私有化，对接 CPA 统一多模型。（3）工程深度：工具链、PDF 分页读取、权限 Gate 对标 Claude Code。（4）生态位：与 CLIProxyAPI 网关互补，可组合交付。（5）团队全栈自研，迭代快。
+
+
+二、技术说明（一页纸）
+
+架构：Electron 桌面端 ↔ WebSocket ↔ Spring Boot Agent 后端 ↔ CPA 网关 ↔ 多模型上游。
+
+协议：OpenAI 兼容 /v1/chat/completions，原生 tool_calls，NDJSON 流式事件。
+
+多模态：Composer 贴图/小 PDF 内联；大 PDF 走 pdf_reference + read_file 分页提取。
+
+部署：本地 Java 后端 + 桌面客户端；可对接内网 CPA，代码与文档不出域。
+
+
+三、补充材料清单（导出 PDF 时可插入截图）
+
+（1）产品主界面截图
+
+（2）Agent 对话与工具调用截图
+
+（3）PDF 分析流程截图
+
+（4）Settings / 模型选择截图
+
+（5）架构图（见 docs/architecture-backend.md）
+
+（6）软件著作权或知识产权证明（如有）
+
+（7）内测反馈或合作意向（脱敏）
+
+（8）官网 agentdesktop.cn 截图
+
+
+四、Word / PDF 导出说明
+
+商业计划书正文见同目录：AgentDesktop-商业计划书.txt
+
+建议用 Word 打开后设置：宋体或微软雅黑小四、1.5 倍行距；封面加项目名称与日期；导出 PDF 不超过 50MB。
+
+建议文件名：
+
+AgentDesktop-商业计划书.pdf（必传）
+
+AgentDesktop-补充材料.pdf（选传）

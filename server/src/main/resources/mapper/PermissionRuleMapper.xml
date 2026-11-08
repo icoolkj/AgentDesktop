@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agentdesktop.server.mapper.PermissionRuleMapper">
+
+    <resultMap id="PermissionRuleMap" type="com.agentdesktop.server.domain.PermissionRuleRow">
+        <id property="id" column="id"/>
+        <result property="scope" column="scope"/>
+        <result property="scopeKey" column="scope_key"/>
+        <result property="ruleJson" column="rule_json"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByScope" resultMap="PermissionRuleMap">
+        SELECT id, scope, scope_key, rule_json, updated_at
+        FROM permission_rule
+        WHERE scope = #{scope}
+        <choose>
+            <when test="scopeKey == null">
+                AND scope_key IS NULL
+            </when>
+            <otherwise>
+                AND scope_key = #{scopeKey}
+            </otherwise>
+        </choose>
+        LIMIT 1
+    </select>
+
+    <insert id="upsert">
+        INSERT INTO permission_rule (scope, scope_key, rule_json)
+        VALUES (#{scope}, #{scopeKey}, CAST(#{ruleJson} AS JSON))
+        ON DUPLICATE KEY UPDATE
+            rule_json = VALUES(rule_json),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+</mapper>

@@ -1,0 +1,29 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: agent-desktop-mysql
+    restart: unless-stopped
+    environment:
+      # 仅供本地开发的默认口令；任何共享/公网环境必须通过 MYSQL_ROOT_PASSWORD 覆盖
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-agent_desktop_dev}
+      MYSQL_DATABASE: agent_desktop
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - agent_mysql_data:/var/lib/mysql
+      - ./server/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7-alpine
+    container_name: agent-desktop-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - agent_redis_data:/data
+
+volumes:
+  agent_mysql_data:
+  agent_redis_data:

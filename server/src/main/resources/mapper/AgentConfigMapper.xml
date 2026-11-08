@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agentdesktop.server.mapper.AgentConfigMapper">
+
+    <resultMap id="AgentConfigMap" type="com.agentdesktop.server.domain.AgentConfigRow">
+        <id property="configKey" column="config_key"/>
+        <result property="configJson" column="config_json"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findByKey" resultMap="AgentConfigMap">
+        SELECT config_key, config_json, updated_at
+        FROM agent_config
+        WHERE config_key = #{configKey}
+    </select>
+
+    <insert id="upsert">
+        INSERT INTO agent_config (config_key, config_json)
+        VALUES (#{configKey}, CAST(#{configJson} AS JSON))
+        ON DUPLICATE KEY UPDATE
+            config_json = VALUES(config_json),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+</mapper>

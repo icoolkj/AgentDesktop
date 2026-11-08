@@ -1,0 +1,49 @@
+appId: cn.agentdesktop.app
+productName: Agent Desktop
+copyright: Copyright © 2026 daipeng · agentdesktop.cn
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+
+extraResources:
+  - from: ../server/target/agent-server-0.1.0.jar
+    to: agent-server.jar
+    filter:
+      - '**/*'
+
+asar: true
+npmRebuild: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  executableName: Agent Desktop
+  artifactName: ${productName}-${version}-win-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+
+mac:
+  target:
+    - dmg
+  artifactName: ${productName}-${version}-mac.${ext}
+  category: public.app-category.developer-tools
+
+linux:
+  target:
+    - AppImage
+  artifactName: ${productName}-${version}-linux.${ext}
+  category: Development
+
+publish:
+  provider: generic
+  url: https://agentdesktop.cn/releases/

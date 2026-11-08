@@ -1,0 +1,55 @@
+server:
+  port: ${AGENT_SERVER_PORT:0}
+  address: 127.0.0.1
+
+spring:
+  application:
+    name: agent-server
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:agent_desktop}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 3000ms
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.agentdesktop.server.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+
+agent:
+  ws-path: /ws
+  cache:
+    session-ttl-minutes: 30
+    config-ttl-minutes: 10
+  loop:
+    # 0 = unlimited (Claude REPL main thread). Set e.g. 50 only if you want a safety cap.
+    max-turns: ${AGENT_MAX_TURNS:0}
+    max-estimated-chars: ${AGENT_MAX_ESTIMATED_CHARS:72000}
+    auto-compact-buffer-chars: ${AGENT_AUTO_COMPACT_BUFFER:13000}
+    max-tool-concurrency: ${AGENT_MAX_TOOL_CONCURRENCY:10}
+    auto-compact-enabled: ${AGENT_AUTO_COMPACT:true}
+  llm:
+    enabled: ${LLM_ENABLED:true}
+    provider: openai-compatible
+    base-url: ${LLM_BASE_URL:http://127.0.0.1:8317/v1}
+    api-key: ${LLM_API_KEY:}
+    model: ${LLM_MODEL:gpt-4o-mini}
+    stream-tool-turns: ${LLM_STREAM_TOOL_TURNS:false}
+    stream-answer-turns: ${LLM_STREAM_ANSWER_TURNS:false}
+    temperature: ${LLM_TEMPERATURE:0.7}
+    max-tokens: ${LLM_MAX_TOKENS:4096}
+    timeout-seconds: ${LLM_TIMEOUT_SECONDS:120}
+
+logging:
+  level:
+    com.agentdesktop: INFO
+    org.springframework.web.socket: INFO

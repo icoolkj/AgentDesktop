@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 版本由根 package.json 的 packageManager 字段提供；不要同时指定 version
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build shared types
+        run: pnpm --filter @agent-desktop/shared-types build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build Java server
+        run: mvn -f server package -DskipTests
+
+      - name: Build desktop
+        run: pnpm --filter @agent-desktop/desktop build
+
+  # Electron GUI 测试在 Linux + Xvfb 上跑。原先的 windows-latest 镜像内置
+  # Visual Studio 18，pnpm 自带的 node-gyp 10 无法识别该版本，导致
+  # better-sqlite3 在 install 阶段编译失败（早于任何测试执行）。
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 版本由根 package.json 的 packageManager 字段提供；不要同时指定 version
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Java server
+        run: mvn -f server package -DskipTests
+
+      # Electron 测试用的是项目自带的 electron 二进制，无需 Playwright 下载 chromium；
+      # 且 ubuntu-latest(26.04) 暂不被当前 Playwright 的 install --with-deps 支持。
+      - name: Ensure Xvfb
+        run: |
+          if ! command -v xvfb-run >/dev/null; then
+            sudo apt-get update && sudo apt-get install -y xvfb
+          fi
+
+      - name: E2E smoke
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" pnpm test:e2e

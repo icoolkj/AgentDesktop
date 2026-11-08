@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agentdesktop.server.mapper.ChatSessionMapper">
+
+    <resultMap id="ChatSessionMap" type="com.agentdesktop.server.domain.ChatSession">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="workspace" column="workspace"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="ChatSessionMap">
+        SELECT id, title, workspace, created_at, updated_at
+        FROM chat_session
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO chat_session (id, title, workspace, created_at, updated_at)
+        VALUES (#{id}, #{title}, #{workspace}, NOW(), NOW())
+    </insert>
+
+    <update id="touchUpdatedAt">
+        UPDATE chat_session SET updated_at = NOW() WHERE id = #{id}
+    </update>
+
+    <select id="listRecent" resultMap="ChatSessionMap">
+        SELECT id, title, workspace, created_at, updated_at
+        FROM chat_session
+        <where>
+            <if test="workspace != null and workspace != ''">
+                workspace = #{workspace}
+            </if>
+        </where>
+        ORDER BY updated_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateTitleIfDefault">
+        UPDATE chat_session
+        SET title = #{title}, updated_at = NOW()
+        WHERE id = #{id}
+          AND (title IS NULL OR title LIKE 'Chat %')
+    </update>
+
+    <update id="updateWorkspace">
+        UPDATE chat_session SET workspace = #{workspace}, updated_at = NOW() WHERE id = #{id}
+    </update>
+</mapper>

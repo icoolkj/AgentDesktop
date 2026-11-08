@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+          - os: ubuntu-latest
+            platform: linux
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm 版本由根 package.json 的 packageManager 字段提供；不要同时指定 version
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      # better-sqlite3 / node-pty 是原生模块，Windows 打包需要 MSVC 工具链
+      - name: Setup MSVC toolchain
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Align node-gyp with installed MSVC
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # node-gyp 10 尚不识别 Visual Studio 18 的版本号，按 VS 2022 (v143) 工具集处理
+          "VSCMD_VER=17.0" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install Linux packaging libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libfuse2
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build shared types
+        run: pnpm --filter @agent-desktop/shared-types build
+
+      - name: Build Java server
+        run: mvn -f server package -DskipTests
+
+      - name: Build desktop
+        run: pnpm --filter @agent-desktop/desktop build
+
+      # electron-builder.yml 里的 generic 地址是 electron-updater 的更新源占位，
+      # 这里显式禁止 publish，安装包统一上传到 GitHub Releases。
+      - name: Package ${{ matrix.platform }}
+        run: pnpm --filter @agent-desktop/desktop exec electron-builder --${{ matrix.platform }} --config electron-builder.yml --publish never
+
+      - name: Upload installers to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            desktop/release/*.exe
+            desktop/release/*.msi
+            desktop/release/*.dmg
+            desktop/release/*.zip
+            desktop/release/*.AppImage
+            desktop/release/*.yml
+            desktop/release/*.blockmap
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

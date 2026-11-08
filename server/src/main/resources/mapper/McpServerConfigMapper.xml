@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.agentdesktop.server.mapper.McpServerConfigMapper">
+
+    <resultMap id="McpServerConfigMap" type="com.agentdesktop.server.domain.McpServerConfigRow">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="configJson" column="config_json"/>
+        <result property="enabled" column="enabled"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="McpServerConfigMap">
+        SELECT id, name, config_json, enabled, updated_at
+        FROM mcp_server_config
+        ORDER BY name
+    </select>
+
+    <insert id="upsert">
+        INSERT INTO mcp_server_config (name, config_json, enabled)
+        VALUES (#{name}, CAST(#{configJson} AS JSON), #{enabled})
+        ON DUPLICATE KEY UPDATE
+            config_json = VALUES(config_json),
+            enabled = VALUES(enabled),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <delete id="deleteByName">
+        DELETE FROM mcp_server_config WHERE name = #{name}
+    </delete>
+
+    <delete id="deleteAll">
+        DELETE FROM mcp_server_config
+    </delete>
+</mapper>
